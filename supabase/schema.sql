@@ -8,7 +8,8 @@ create table if not exists public.items (
   id         bigint generated always as identity primary key,
   name       text    not null,
   image_url  text,
-  checked    boolean not null default false,
+  link_url   text,
+  checked   boolean not null default false,
   position   integer not null default 0,
   created_at timestamptz not null default now()
 );
@@ -55,7 +56,7 @@ as $$
 $$;
 
 create or replace function public.get_items(p text)
-returns table (id bigint, name text, image_url text, checked boolean)
+returns table (id bigint, name text, image_url text, link_url text, checked boolean)
 language plpgsql
 security definer
 set search_path = public, extensions
@@ -65,7 +66,7 @@ begin
     raise exception 'invalid_password';
   end if;
   return query
-    select i.id, i.name, i.image_url, i.checked
+    select i.id, i.name, i.image_url, i.link_url, i.checked
     from public.items i
     order by i.position, i.id;
 end;

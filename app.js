@@ -29,6 +29,25 @@ async function rpc(name, args) {
   return res.json();
 }
 
+// N'accepte que les liens http(s) (refuse javascript:, data:, etc.).
+function safeUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:" ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+function makeLink(href, content) {
+  const a = document.createElement("a");
+  a.href = href;
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.append(content);
+  return a;
+}
+
 function render(items) {
   list.replaceChildren();
   statusEl.textContent = items.length ? "" : "La liste est vide pour le moment.";
@@ -47,13 +66,16 @@ function render(items) {
     name.className = "name";
     name.textContent = item.name;
 
+    const href = safeUrl(item.link_url);
+    if (href) name.replaceChildren(makeLink(href, item.name));
+
     li.append(box, name);
     if (item.image_url) {
       const img = document.createElement("img");
       img.src = item.image_url;
       img.alt = "";
       img.loading = "lazy";
-      li.append(img);
+      li.append(href ? makeLink(href, img) : img);
     }
     list.append(li);
   }

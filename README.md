@@ -8,7 +8,8 @@ Petit site statique (HTML/CSS/JS) hébergé sur GitHub Pages. Les données sont 
 ## Comment ça marche
 
 - `index.html`, `style.css`, `app.js` : le site.
-- `supabase/schema.sql` : tables et fonctions de la base.
+- `supabase/schema.sql` : tables et fonctions de la base (installation neuve).
+- `supabase/migrations/` : scripts à exécuter, dans l'ordre, sur une base déjà installée (ex. `001_add_link_url.sql`).
 - `.github/workflows/keepalive.yml` : appel quotidien qui évite la mise en pause du projet Supabase gratuit.
 
 La sécurité repose sur la base : les tables sont verrouillées (RLS sans policy) et le site n'y accède que via des fonctions qui vérifient le mot de passe (stocké haché). L'URL et la clé `sb_publishable_…` présentes dans le code sont publiques par conception. **Ne jamais commiter** la clé `sb_secret_…`, le mot de passe de la base ni le mot de passe du site.
@@ -32,20 +33,27 @@ Toutes se font dans Supabase, **SQL Editor** (ou **Table Editor** pour les actio
 ### Ajouter un article
 
 ```sql
-insert into public.items (name, image_url, position)
-values ('Poussette', 'images/poussette.jpg', 10);
+insert into public.items (name, image_url, link_url, position)
+values ('Poussette', 'images/poussette.jpg', 'https://boutique.com/poussette', 10);
 ```
 
 - `image_url` est optionnelle (`null` pour aucune image).
+- `link_url` est optionnelle (`null` pour aucun lien). Si elle est renseignée, le nom **et** l'image de l'article deviennent cliquables et ouvrent la page dans un nouvel onglet. Seuls les liens `https://` et `http://` sont acceptés.
 - Les articles sont triés par `position` puis par `id` : donnez des valeurs croissantes (10, 20, 30…) pour pouvoir en insérer entre deux.
 
 Plusieurs articles à la fois :
 
 ```sql
-insert into public.items (name, image_url, position) values
-  ('Lit bébé',  'images/lit-bebe.jpg', 20),
-  ('Body 3 mois', null, 30),
-  ('Veilleuse', 'https://exemple.com/veilleuse.jpg', 40);
+insert into public.items (name, image_url, link_url, position) values
+  ('Lit bébé',  'images/lit-bebe.jpg', 'https://boutique.com/lit', 20),
+  ('Body 3 mois', null, null, 30),
+  ('Veilleuse', 'https://exemple.com/veilleuse.jpg', null, 40);
+```
+
+Ajouter ou changer le lien d'un article existant :
+
+```sql
+update public.items set link_url = 'https://boutique.com/nouveau-lien' where id = 3;
 ```
 
 ### Ajouter les images des articles
