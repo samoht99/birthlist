@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Liste de naissance</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app" hidden>
+    <h1>Liste de naissance</h1>
+    <p id="status" class="status"></p>
+    <ul id="list" class="list"></ul>
+  </main>
+
+  <div id="gate" class="gate">
+    <form id="gate-form" class="gate-box">
+      <h2>Liste de naissance</h2>
+      <p>Entrez le mot de passe pour accéder à la liste.</p>
+      <input id="password" type="password" placeholder="Mot de passe" autocomplete="current-password" required autofocus>
+      <button type="submit">Entrer</button>
+      <p id="gate-error" class="error" role="alert"></p>
+    </form>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
