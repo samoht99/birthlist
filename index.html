@@ -4,20 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>Liste de naissance</title>
+  <title>Liste de naissance - Famille DD</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main id="app" hidden>
-    <h1>Liste de naissance</h1>
+    <header class="hero">
+      <svg class="rainbow" viewBox="0 0 120 64" aria-hidden="true">
+        <g fill="none" stroke-width="7" stroke-linecap="round">
+          <path d="M8 60a52 52 0 0 1 104 0" stroke="#C97B5A"/>
+          <path d="M20 60a40 40 0 0 1 80 0" stroke="#E6B8A2"/>
+          <path d="M32 60a28 28 0 0 1 56 0" stroke="#E8C98A"/>
+          <path d="M44 60a16 16 0 0 1 32 0" stroke="#B9CBB0"/>
+        </g>
+      </svg>
+      <h1>Liste de naissance - Famille DD</h1>
+      <p class="welcome">
+        Fille ou garçon, on ne sait pas encore, mais on a déjà hâte !
+        Voici quelques idées de cadeaux. Cochez celui que vous choisissez pour éviter les doublons.
+        Merci beaucoup !
+      </p>
+    </header>
     <p id="status" class="status"></p>
     <ul id="list" class="list"></ul>
   </main>
 
   <div id="gate" class="gate">
     <form id="gate-form" class="gate-box">
-      <h2>Liste de naissance</h2>
-      <p>Entrez le mot de passe pour accéder à la liste.</p>
+      <svg class="rainbow" viewBox="0 0 120 64" aria-hidden="true">
+        <g fill="none" stroke-width="7" stroke-linecap="round">
+          <path d="M8 60a52 52 0 0 1 104 0" stroke="#C97B5A"/>
+          <path d="M20 60a40 40 0 0 1 80 0" stroke="#E6B8A2"/>
+          <path d="M32 60a28 28 0 0 1 56 0" stroke="#E8C98A"/>
+          <path d="M44 60a16 16 0 0 1 32 0" stroke="#B9CBB0"/>
+        </g>
+      </svg>
+      <h2>Famille DD</h2>
+      <p>Un petit mot de passe pour entrer</p>
       <input id="password" type="password" placeholder="Mot de passe" autocomplete="current-password" required autofocus>
       <button type="submit">Entrer</button>
       <p id="gate-error" class="error" role="alert"></p>

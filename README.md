@@ -33,7 +33,7 @@ Toutes se font dans Supabase, **SQL Editor** (ou **Table Editor** pour les actio
 
 ```sql
 insert into public.items (name, image_url, position)
-values ('Poussette', 'https://exemple.com/poussette.jpg', 10);
+values ('Poussette', 'images/poussette.jpg', 10);
 ```
 
 - `image_url` est optionnelle (`null` pour aucune image).
@@ -43,8 +43,25 @@ Plusieurs articles à la fois :
 
 ```sql
 insert into public.items (name, image_url, position) values
-  ('Lit bébé',  'https://exemple.com/lit.jpg', 20),
-  ('Body 3 mois', null, 30);
+  ('Lit bébé',  'images/lit-bebe.jpg', 20),
+  ('Body 3 mois', null, 30),
+  ('Veilleuse', 'https://exemple.com/veilleuse.jpg', 40);
+```
+
+### Ajouter les images des articles
+
+1. Placer le fichier dans le dossier `images/` du dépôt (GitHub : **Add file > Upload files**, ou copie locale puis `git add`, `git commit`, `git push`). GitHub Pages met le site à jour en une ou deux minutes.
+2. Dans `image_url`, indiquer le **chemin relatif, sans slash initial** : `images/poussette.jpg`.
+   - `/images/poussette.jpg` ne fonctionne **pas** (le site est servi sous `/birthlist/`).
+   - Une URL complète (`https://…`) fonctionne aussi : les deux modes peuvent être mélangés.
+3. Conseils : environ 400 px de côté, JPG de moins de 100 Ko, nom de fichier en minuscules, sans espaces ni accents (`body-blanc.jpg`).
+
+Le dépôt étant public, ces images sont accessibles à qui connaît leur URL, même sans le mot de passe du site.
+
+Changer l'image d'un article existant :
+
+```sql
+update public.items set image_url = 'images/nouvelle.jpg' where id = 3;
 ```
 
 ### Décocher un article
