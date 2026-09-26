@@ -55,13 +55,6 @@ function render(items) {
     const li = document.createElement("li");
     li.className = "item" + (item.checked ? " checked" : "");
 
-    const box = document.createElement("input");
-    box.type = "checkbox";
-    box.checked = item.checked;
-    box.disabled = item.checked; // seul l'admin peut décocher (dans la base)
-    box.setAttribute("aria-label", item.name);
-    box.addEventListener("change", () => onCheck(item.id, box));
-
     const name = document.createElement("span");
     name.className = "name";
     name.textContent = item.name;
@@ -69,7 +62,25 @@ function render(items) {
     const href = safeUrl(item.link_url);
     if (href) name.replaceChildren(makeLink(href, item.name));
 
-    li.append(box, name);
+    // Seul l'admin peut annuler un achat (dans la base) : pas de bouton une fois acheté.
+    let action;
+    if (item.checked) {
+      action = document.createElement("span");
+      action.className = "badge-done";
+      action.textContent = "✓ Acheté";
+    } else {
+      action = document.createElement("button");
+      action.type = "button";
+      action.className = "btn-buy";
+      action.textContent = "Acheté";
+      action.setAttribute("aria-label", `Marquer « ${item.name} » comme acheté`);
+      action.addEventListener("click", () => askConfirm(item));
+    }
+
+    const body = document.createElement("div");
+    body.className = "body";
+    body.append(name, action);
+    li.append(body);
     if (item.image_url) {
       const img = document.createElement("img");
       img.src = item.image_url;
@@ -90,15 +101,39 @@ async function load() {
   }
 }
 
-async function onCheck(id, box) {
-  box.disabled = true;
-  try {
-    await rpc("check_item", { p: password, item_id: id });
-  } catch (e) {
-    statusEl.textContent = "La case n'a pas pu être cochée. Réessayez.";
-  }
-  await load();
+const confirmDialog = document.getElementById("confirm");
+const confirmName = document.getElementById("confirm-name");
+const confirmYes = document.getElementById("confirm-yes");
+const confirmNo = document.getElementById("confirm-no");
+let pendingItem = null;
+
+function askConfirm(item) {
+  pendingItem = item;
+  confirmName.textContent = item.name;
+  confirmYes.disabled = false;
+  confirmDialog.showModal();
 }
+
+confirmNo.addEventListener("click", () => confirmDialog.close());
+// Un clic à côté de la boîte (sur le fond) équivaut à « Non ». Échap aussi (natif).
+confirmDialog.addEventListener("click", (e) => {
+  if (e.target === confirmDialog) confirmDialog.close();
+});
+confirmDialog.addEventListener("close", () => { pendingItem = null; });
+
+confirmYes.addEventListener("click", async () => {
+  if (!pendingItem) return;
+  confirmYes.disabled = true;
+  try {
+    await rpc("check_item", { p: password, item_id: pendingItem.id });
+    statusEl.textContent = "";
+  } catch (e) {
+    if (e.invalidPassword) { confirmDialog.close(); return lock(); }
+    statusEl.textContent = "L'article n'a pas pu être marqué comme acheté. Réessayez.";
+  }
+  confirmDialog.close();
+  await load();
+});
 
 function unlock() {
   gate.hidden = true;

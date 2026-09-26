@@ -56,28 +56,36 @@ h1 {
 .item.checked { opacity: .65; }
 .item.checked .name { text-decoration: line-through; }
 
-.item input[type=checkbox] {
-  appearance: none; -webkit-appearance: none;
-  width: 30px; height: 30px; flex: none; margin: 0;
-  border: 2px solid var(--accent);
-  border-radius: 50%;
-  background: #fff;
-  cursor: pointer;
-  display: grid; place-content: center;
-  transition: background .15s, transform .15s;
+.item .body { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.item .body .name { flex: none; }
+
+.btn-buy, .badge-done {
+  font: inherit; font-size: .9rem;
+  padding: 8px 18px; border-radius: 999px; border: 0;
 }
-.item input[type=checkbox]::after {
-  content: "";
-  width: 6px; height: 12px;
-  border: solid #fff; border-width: 0 3px 3px 0;
-  transform: translateY(-1px) rotate(45deg) scale(0);
-  transition: transform .15s;
+.btn-buy { background: var(--accent); color: #fff; cursor: pointer; transition: background .15s, transform .1s; }
+.btn-buy:hover { background: var(--accent-dark); }
+.btn-buy:active { transform: scale(.96); }
+.btn-buy:focus-visible { outline: 3px solid #e8c98a; outline-offset: 2px; }
+.badge-done { background: #efe4d3; color: var(--ink-soft); }
+
+.confirm {
+  border: 0; border-radius: 26px; padding: 24px 22px;
+  width: calc(100% - 32px); max-width: 340px;
+  background: var(--card); color: var(--ink); text-align: center;
 }
-.item input[type=checkbox]:checked { background: var(--accent); }
-.item input[type=checkbox]:checked::after { transform: translateY(-1px) rotate(45deg) scale(1); }
-.item input[type=checkbox]:disabled { cursor: default; }
-.item input[type=checkbox]:not(:disabled):active { transform: scale(.9); }
-.item input[type=checkbox]:focus-visible { outline: 3px solid #e8c98a; outline-offset: 2px; }
+.confirm::backdrop { background: rgba(60, 45, 35, .5); }
+.confirm-title { margin: 0 0 8px; line-height: 1.45; font-size: 1.05rem; }
+.confirm-name { margin: 0 0 18px; color: var(--ink-soft); font-size: .9rem; overflow-wrap: anywhere; }
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-actions button {
+  flex: 1; font: inherit; padding: 10px 0; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--accent);
+}
+.btn-no { background: #fff; color: var(--accent-dark); }
+.btn-yes { background: var(--accent); color: #fff; }
+.btn-yes:disabled { opacity: .6; cursor: wait; }
+.confirm-actions button:focus-visible { outline: 3px solid #e8c98a; outline-offset: 2px; }
 
 .gate {
   position: fixed; inset: 0;
