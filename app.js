@@ -72,15 +72,12 @@ function render(items) {
       action = document.createElement("button");
       action.type = "button";
       action.className = "btn-buy";
-      action.textContent = "Acheté";
-      action.setAttribute("aria-label", `Marquer « ${item.name} » comme acheté`);
+      action.textContent = "Choisir";
+      action.setAttribute("aria-label", `Choisir « ${item.name} »`);
       action.addEventListener("click", () => askConfirm(item));
     }
 
-    const body = document.createElement("div");
-    body.className = "body";
-    body.append(name, action);
-    li.append(body);
+    li.append(name);
     if (item.image_url) {
       const img = document.createElement("img");
       img.src = item.image_url;
@@ -88,6 +85,7 @@ function render(items) {
       img.loading = "lazy";
       li.append(href ? makeLink(href, img) : img);
     }
+    li.append(action);
     list.append(li);
   }
 }

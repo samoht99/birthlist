@@ -38,8 +38,8 @@ h1 {
 .item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 12px 14px;
+  gap: 10px;
+  padding: 12px;
   background: var(--card);
   border-radius: 26px;
   border: 1px solid var(--line);
@@ -56,12 +56,9 @@ h1 {
 .item.checked { opacity: .65; }
 .item.checked .name { text-decoration: line-through; }
 
-.item .body { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
-.item .body .name { flex: none; }
-
 .btn-buy, .badge-done {
-  font: inherit; font-size: .9rem;
-  padding: 8px 18px; border-radius: 999px; border: 0;
+  font: inherit; font-size: .9rem; flex: none; white-space: nowrap;
+  padding: 8px 14px; border-radius: 999px; border: 0;
 }
 .btn-buy { background: var(--accent); color: #fff; cursor: pointer; transition: background .15s, transform .1s; }
 .btn-buy:hover { background: var(--accent-dark); }
