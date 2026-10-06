@@ -2,6 +2,8 @@
 const SUPABASE_URL = "https://bwcizhvhtwkjfjadurcj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_KLQZ-MuQKYbV1_GUvOFk9Q_nfumGtNc";
 
+const SUPABASE_SCHEMA = "birthlist";
+
 const STORAGE_KEY = "birthlist_pw";
 
 const gate = document.getElementById("gate");
@@ -17,7 +19,11 @@ let password = "";
 async function rpc(name, args) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY },
+    headers: {
+      "Content-Type": "application/json",
+      apikey: SUPABASE_KEY,
+      "Content-Profile": SUPABASE_SCHEMA, // schéma PostgreSQL où vivent les fonctions
+    },
     body: JSON.stringify(args),
   });
   if (!res.ok) {

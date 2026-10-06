@@ -16,10 +16,11 @@ La sécurité repose sur la base : les tables sont verrouillées (RLS sans polic
 
 ## Installation initiale (une seule fois)
 
-1. Dans Supabase : **SQL Editor > New query**, coller le contenu de `supabase/schema.sql`, **Run**.
+1. Dans Supabase : **SQL Editor > New query**, coller le contenu de `supabase/schema.sql`, **Run**. Les tables et fonctions sont dans le schéma `birthlist` (pas `public`).
+   Puis **Project Settings > Data API > Exposed schemas** : ajouter `birthlist`, sinon le site n'a pas accès à l'API.
 2. Définir le mot de passe du site (remplacer `MON_MOT_DE_PASSE`) :
    ```sql
-   insert into public.app_config (key, value)
+   insert into birthlist.app_config (key, value)
    values ('password_hash', extensions.crypt('MON_MOT_DE_PASSE', extensions.gen_salt('bf')))
    on conflict (key) do update set value = excluded.value;
    ```
@@ -33,7 +34,7 @@ Toutes se font dans Supabase, **SQL Editor** (ou **Table Editor** pour les actio
 ### Ajouter un article
 
 ```sql
-insert into public.items (name, image_url, link_url, position)
+insert into birthlist.items (name, image_url, link_url, position)
 values ('Poussette', 'images/poussette.jpg', 'https://boutique.com/poussette', 10);
 ```
 
@@ -44,7 +45,7 @@ values ('Poussette', 'images/poussette.jpg', 'https://boutique.com/poussette', 1
 Plusieurs articles à la fois :
 
 ```sql
-insert into public.items (name, image_url, link_url, position) values
+insert into birthlist.items (name, image_url, link_url, position) values
   ('Lit bébé',  'images/lit-bebe.jpg', 'https://boutique.com/lit', 20),
   ('Body 3 mois', null, null, 30),
   ('Veilleuse', 'https://exemple.com/veilleuse.jpg', null, 40);
@@ -53,7 +54,7 @@ insert into public.items (name, image_url, link_url, position) values
 Ajouter ou changer le lien d'un article existant :
 
 ```sql
-update public.items set link_url = 'https://boutique.com/nouveau-lien' where id = 3;
+update birthlist.items set link_url = 'https://boutique.com/nouveau-lien' where id = 3;
 ```
 
 ### Ajouter les images des articles
@@ -69,28 +70,28 @@ Le dépôt étant public, ces images sont accessibles à qui connaît leur URL, 
 Changer l'image d'un article existant :
 
 ```sql
-update public.items set image_url = 'images/nouvelle.jpg' where id = 3;
+update birthlist.items set image_url = 'images/nouvelle.jpg' where id = 3;
 ```
 
 ### Décocher un article
 
 ```sql
-update public.items set checked = false where id = 3;
+update birthlist.items set checked = false where id = 3;
 ```
 
-Tout décocher : `update public.items set checked = false;`
+Tout décocher : `update birthlist.items set checked = false;`
 
 ### Voir la liste et l'état des cases
 
 ```sql
-select id, name, checked from public.items order by position, id;
+select id, name, checked from birthlist.items order by position, id;
 ```
 
 ### Modifier ou supprimer un article
 
 ```sql
-update public.items set name = 'Nouveau nom', image_url = 'https://…' where id = 3;
-delete from public.items where id = 3;
+update birthlist.items set name = 'Nouveau nom', image_url = 'https://…' where id = 3;
+delete from birthlist.items where id = 3;
 ```
 
 ### Changer le mot de passe du site
@@ -99,7 +100,7 @@ Relancer la requête de l'étape 2 avec le nouveau mot de passe. Les invités de
 
 ## Mise en pause de Supabase
 
-Le workflow `keepalive.yml` appelle chaque jour la fonction `ping`, qui écrit un horodatage (`last_ping`) dans la table `app_config`. Une simple lecture n'avait pas suffi à Supabase pour considérer le projet comme actif. Pour vérifier : `select * from public.app_config where key = 'last_ping';`. Si le projet est malgré tout mis en pause, le réactiver depuis le dashboard Supabase (les données sont conservées). GitHub désactive les workflows planifiés après 60 jours sans activité dans le dépôt : en cas d'avertissement, réactiver le workflow dans l'onglet **Actions**.
+Le workflow `keepalive.yml` appelle chaque jour la fonction `ping`, qui écrit un horodatage (`last_ping`) dans la table `app_config`. Une simple lecture n'avait pas suffi à Supabase pour considérer le projet comme actif. Pour vérifier : `select * from birthlist.app_config where key = 'last_ping';`. Si le projet est malgré tout mis en pause, le réactiver depuis le dashboard Supabase (les données sont conservées). GitHub désactive les workflows planifiés après 60 jours sans activité dans le dépôt : en cas d'avertissement, réactiver le workflow dans l'onglet **Actions**.
 
 ## Limites connues
 

@@ -1,38 +1,31 @@
--- Schéma de la liste de naissance (schéma PostgreSQL "birthlist").
--- À exécuter une fois dans Supabase : SQL Editor > New query > coller > Run.
--- Ensuite : Project Settings > Data API > Exposed schemas : ajouter "birthlist".
+-- Migration : déplace tables et fonctions du schéma public vers le schéma birthlist.
+-- Les données sont conservées (les tables sont déplacées, pas recréées).
+-- À exécuter une fois dans Supabase (SQL Editor), en une seule fois.
+--
+-- AVANT : Project Settings > Data API > Exposed schemas : ajouter "birthlist".
+-- APRÈS : merger la PR qui met à jour le site (en-tête Content-Profile).
+-- Entre les deux, le site affiche une erreur : prévoir quelques minutes.
 
-create extension if not exists pgcrypto with schema extensions;
+begin;
 
 create schema if not exists birthlist;
 grant usage on schema birthlist to anon, authenticated;
 
 -- ---------------------------------------------------------------- Tables
-create table if not exists birthlist.items (
-  id         bigint generated always as identity primary key,
-  name       text    not null,
-  image_url  text,
-  link_url   text,
-  checked    boolean not null default false,
-  position   integer not null default 0,
-  created_at timestamptz not null default now()
-);
+alter table public.items      set schema birthlist;
+alter table public.app_config set schema birthlist;
 
-create table if not exists birthlist.app_config (
-  key   text primary key,
-  value text not null
-);
-
--- RLS activée et AUCUNE policy : les rôles anon/authenticated n'ont aucun
--- accès direct aux tables. Seules les fonctions ci-dessous (security definer)
--- peuvent les lire/écrire, et uniquement avec le bon mot de passe.
-alter table birthlist.items      enable row level security;
-alter table birthlist.app_config enable row level security;
-revoke all on birthlist.items, birthlist.app_config from anon, authenticated;
+-- ----------------------------------------------- Anciennes fonctions (public)
+-- Leur code référence public.items / public.app_config : on les supprime et
+-- on les recrée dans birthlist.
+drop function if exists public.get_items(text);
+drop function if exists public.check_item(text, bigint);
+drop function if exists public.verify_password(text);
+drop function if exists public.ping();
+drop function if exists public._password_ok(text);
 
 -- ------------------------------------------------------------- Fonctions
--- Vérifie le mot de passe. En cas d'échec, on ralentit (anti force brute).
-create or replace function birthlist._password_ok(p text)
+create function birthlist._password_ok(p text)
 returns boolean
 language plpgsql
 security definer
@@ -50,7 +43,7 @@ begin
 end;
 $$;
 
-create or replace function birthlist.verify_password(p text)
+create function birthlist.verify_password(p text)
 returns boolean
 language sql
 security definer
@@ -59,7 +52,7 @@ as $$
   select birthlist._password_ok(p);
 $$;
 
-create or replace function birthlist.get_items(p text)
+create function birthlist.get_items(p text)
 returns table (id bigint, name text, image_url text, link_url text, checked boolean)
 language plpgsql
 security definer
@@ -76,8 +69,7 @@ begin
 end;
 $$;
 
--- Coche uniquement (jamais de décochage : réservé à l'admin via le dashboard).
-create or replace function birthlist.check_item(p text, item_id bigint)
+create function birthlist.check_item(p text, item_id bigint)
 returns void
 language plpgsql
 security definer
@@ -91,9 +83,7 @@ begin
 end;
 $$;
 
--- Appelée chaque jour par GitHub Actions pour éviter la mise en pause
--- du projet Supabase gratuit. Écrit un horodatage, ne renvoie aucune donnée.
-create or replace function birthlist.ping()
+create function birthlist.ping()
 returns boolean
 language sql
 security definer
@@ -106,6 +96,8 @@ as $$
 $$;
 
 -- ---------------------------------------------------------------- Droits
+revoke all on birthlist.items, birthlist.app_config from anon, authenticated;
+
 revoke execute on function birthlist._password_ok(text) from public, anon, authenticated;
 revoke execute on function birthlist.verify_password(text) from public;
 revoke execute on function birthlist.get_items(text) from public;
@@ -116,3 +108,5 @@ grant execute on function birthlist.verify_password(text) to anon, authenticated
 grant execute on function birthlist.get_items(text) to anon, authenticated;
 grant execute on function birthlist.check_item(text, bigint) to anon, authenticated;
 grant execute on function birthlist.ping() to anon, authenticated;
+
+commit;

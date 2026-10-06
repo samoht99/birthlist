@@ -16,5 +16,6 @@ jobs:
           curl --fail --silent --show-error -X POST \
             "https://bwcizhvhtwkjfjadurcj.supabase.co/rest/v1/rpc/ping" \
             -H "apikey: sb_publishable_KLQZ-MuQKYbV1_GUvOFk9Q_nfumGtNc" \
+            -H "Content-Profile: birthlist" \
             -H "Content-Type: application/json" \
             -d '{}'
