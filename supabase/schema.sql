@@ -95,7 +95,10 @@ language sql
 security definer
 set search_path = public
 as $$
-  select exists (select 1 from public.items) or true;
+  insert into public.app_config (key, value)
+  values ('last_ping', now()::text)
+  on conflict (key) do update set value = excluded.value
+  returning true;
 $$;
 
 -- ---------------------------------------------------------------- Droits
