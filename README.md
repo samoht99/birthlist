@@ -99,7 +99,7 @@ Relancer la requête de l'étape 2 avec le nouveau mot de passe. Les invités de
 
 ## Mise en pause de Supabase
 
-Le workflow `keepalive.yml` appelle la base chaque jour. Si le projet est malgré tout mis en pause, le réactiver depuis le dashboard Supabase (les données sont conservées). GitHub désactive les workflows planifiés après 60 jours sans activité dans le dépôt : en cas d'avertissement, réactiver le workflow dans l'onglet **Actions**.
+Le workflow `keepalive.yml` appelle chaque jour la fonction `ping`, qui écrit un horodatage (`last_ping`) dans la table `app_config`. Une simple lecture n'avait pas suffi à Supabase pour considérer le projet comme actif. Pour vérifier : `select * from public.app_config where key = 'last_ping';`. Si le projet est malgré tout mis en pause, le réactiver depuis le dashboard Supabase (les données sont conservées). GitHub désactive les workflows planifiés après 60 jours sans activité dans le dépôt : en cas d'avertissement, réactiver le workflow dans l'onglet **Actions**.
 
 ## Limites connues
 
