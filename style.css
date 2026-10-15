@@ -50,6 +50,10 @@ h1 {
   width: 80px; height: 80px; object-fit: cover; flex: none;
   border-radius: 20px; background: var(--line);
 }
+.item .imgs { display: flex; gap: 10px; flex: none; }
+/* 2 images : elles passent sur une ligne à part sous le nom et le bouton. */
+.item.two-images { flex-wrap: wrap; }
+.item.two-images .imgs { order: 3; flex-basis: 100%; }
 .item a { color: inherit; text-decoration: none; display: block; flex: none; }
 .item .name a { display: inline; flex: initial; text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
 .item .name a:hover { color: var(--accent-dark); }

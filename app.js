@@ -65,8 +65,17 @@ function render(items) {
     name.className = "name";
     name.textContent = item.name;
 
-    const href = safeUrl(item.link_url);
-    if (href) name.replaceChildren(makeLink(href, item.name));
+    // Jusqu'à 2 images, chacune avec son propre lien (image_url/link_url, image_url_2/link_url_2).
+    // - 0 ou 1 image : le lien (link_url de l'image présente) est sur le texte et l'image.
+    // - 2 images : le texte n'est pas cliquable, chaque lien est uniquement sur son image.
+    const pics = [
+      { src: item.image_url, href: safeUrl(item.link_url) },
+      { src: item.image_url_2, href: safeUrl(item.link_url_2) },
+    ].filter((pic) => pic.src);
+    const two = pics.length === 2;
+    const textHref = two ? null : pics.length ? pics[0].href : safeUrl(item.link_url);
+    if (textHref) name.replaceChildren(makeLink(textHref, item.name));
+    if (two) li.classList.add("two-images");
 
     // Seul l'admin peut annuler un achat (dans la base) : pas de bouton une fois acheté.
     let action;
@@ -84,12 +93,18 @@ function render(items) {
     }
 
     li.append(name);
-    if (item.image_url) {
-      const img = document.createElement("img");
-      img.src = item.image_url;
-      img.alt = "";
-      img.loading = "lazy";
-      li.append(href ? makeLink(href, img) : img);
+    if (pics.length) {
+      const imgs = document.createElement("div");
+      imgs.className = "imgs";
+      for (const pic of pics) {
+        const img = document.createElement("img");
+        img.src = pic.src;
+        img.alt = "";
+        img.loading = "lazy";
+        const href = two ? pic.href : textHref;
+        imgs.append(href ? makeLink(href, img) : img);
+      }
+      li.append(imgs);
     }
     li.append(action);
     list.append(li);

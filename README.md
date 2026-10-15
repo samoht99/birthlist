@@ -9,7 +9,7 @@ Petit site statique (HTML/CSS/JS) hébergé sur GitHub Pages. Les données sont 
 
 - `index.html`, `style.css`, `app.js` : le site.
 - `supabase/schema.sql` : tables et fonctions de la base (installation neuve).
-- `supabase/migrations/` : scripts à exécuter, dans l'ordre, sur une base déjà installée (ex. `001_add_link_url.sql`).
+- `supabase/migrations/` : scripts à exécuter, dans l'ordre, sur une base déjà installée (ex. `001_add_link_url.sql`, `004_add_second_image.sql`).
 - `.github/workflows/keepalive.yml` : appel quotidien qui évite la mise en pause du projet Supabase gratuit.
 
 La sécurité repose sur la base : les tables sont verrouillées (RLS sans policy) et le site n'y accède que via des fonctions qui vérifient le mot de passe (stocké haché). L'URL et la clé `sb_publishable_…` présentes dans le code sont publiques par conception. **Ne jamais commiter** la clé `sb_secret_…`, le mot de passe de la base ni le mot de passe du site.
@@ -38,8 +38,12 @@ insert into birthlist.items (name, image_url, link_url, position)
 values ('Poussette', 'images/poussette.jpg', 'https://boutique.com/poussette', 10);
 ```
 
-- `image_url` est optionnelle (`null` pour aucune image).
-- `link_url` est optionnelle (`null` pour aucun lien). Si elle est renseignée, le nom **et** l'image de l'article deviennent cliquables et ouvrent la page dans un nouvel onglet. Seuls les liens `https://` et `http://` sont acceptés.
+- `image_url` est optionnelle (`null` pour aucune image). `image_url_2` permet une **seconde image** (2 maximum par article).
+- `link_url` et `link_url_2` sont optionnelles : le lien de la première et de la seconde image. Ils s'ouvrent dans un nouvel onglet. Seuls les liens `https://` et `http://` sont acceptés.
+- **Comportement des liens** :
+  - **0 ou 1 image** : `link_url` est sur le **nom et l'image** (si la seule image est `image_url_2`, c'est `link_url_2`).
+  - **2 images** : le nom n'est **pas** cliquable ; chaque image a son propre lien (`link_url` pour la première, `link_url_2` pour la seconde).
+- Avec 2 images, elles s'affichent sur une ligne sous le nom et le bouton.
 - Les articles sont triés par `position` puis par `id` : donnez des valeurs croissantes (10, 20, 30…) pour pouvoir en insérer entre deux.
 
 Plusieurs articles à la fois :
@@ -51,6 +55,14 @@ insert into birthlist.items (name, image_url, link_url, position) values
   ('Veilleuse', 'https://exemple.com/veilleuse.jpg', null, 40);
 ```
 
+Article avec deux images, chacune avec son lien :
+
+```sql
+insert into birthlist.items (name, image_url, link_url, image_url_2, link_url_2, position)
+values ('Lampe de chevet', 'images/lampe-a.jpg', 'https://boutique-a.com/lampe',
+        'images/lampe-b.jpg', 'https://boutique-b.com/lampe', 50);
+```
+
 Ajouter ou changer le lien d'un article existant :
 
 ```sql
@@ -60,7 +72,7 @@ update birthlist.items set link_url = 'https://boutique.com/nouveau-lien' where 
 ### Ajouter les images des articles
 
 1. Placer le fichier dans le dossier `images/` du dépôt (GitHub : **Add file > Upload files**, ou copie locale puis `git add`, `git commit`, `git push`). GitHub Pages met le site à jour en une ou deux minutes.
-2. Dans `image_url`, indiquer le **chemin relatif, sans slash initial** : `images/poussette.jpg`.
+2. Dans `image_url` (ou `image_url_2` pour la seconde), indiquer le **chemin relatif, sans slash initial** : `images/poussette.jpg`.
    - `/images/poussette.jpg` ne fonctionne **pas** (le site est servi sous `/birthlist/`).
    - Une URL complète (`https://…`) fonctionne aussi : les deux modes peuvent être mélangés.
 3. Conseils : environ 400 px de côté, JPG de moins de 100 Ko, nom de fichier en minuscules, sans espaces ni accents (`body-blanc.jpg`).
