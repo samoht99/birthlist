@@ -43,7 +43,7 @@ values ('Poussette', 'images/poussette.jpg', 'https://boutique.com/poussette', 1
 - **Comportement des liens** :
   - **0 ou 1 image** : `link_url` est sur le **nom et l'image** (si la seule image est `image_url_2`, c'est `link_url_2`).
   - **2 images** : le nom n'est **pas** cliquable ; chaque image a son propre lien (`link_url` pour la première, `link_url_2` pour la seconde).
-- Avec 2 images, elles s'affichent sur une ligne sous le nom et le bouton.
+- Avec 2 images, elles s'affichent sur la même ligne que le nom et le bouton, en vignettes un peu plus petites (60 px au lieu de 80 px).
 - Les articles sont triés par `position` puis par `id` : donnez des valeurs croissantes (10, 20, 30…) pour pouvoir en insérer entre deux.
 
 Plusieurs articles à la fois :
