@@ -101,28 +101,12 @@ begin
 end;
 $$;
 
--- Appelée chaque jour par GitHub Actions pour éviter la mise en pause
--- du projet Supabase gratuit. Écrit un horodatage, ne renvoie aucune donnée.
-create or replace function birthlist.ping()
-returns boolean
-language sql
-security definer
-set search_path = birthlist
-as $$
-  insert into birthlist.app_config (key, value)
-  values ('last_ping', now()::text)
-  on conflict (key) do update set value = excluded.value
-  returning true;
-$$;
-
 -- ---------------------------------------------------------------- Droits
 revoke execute on function birthlist._password_ok(text) from public, anon, authenticated;
 revoke execute on function birthlist.verify_password(text) from public;
 revoke execute on function birthlist.get_items(text) from public;
 revoke execute on function birthlist.check_item(text, bigint) from public;
-revoke execute on function birthlist.ping() from public;
 
 grant execute on function birthlist.verify_password(text) to anon, authenticated;
 grant execute on function birthlist.get_items(text) to anon, authenticated;
 grant execute on function birthlist.check_item(text, bigint) to anon, authenticated;
-grant execute on function birthlist.ping() to anon, authenticated;

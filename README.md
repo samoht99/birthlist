@@ -10,7 +10,6 @@ Petit site statique (HTML/CSS/JS) hébergé sur GitHub Pages. Les données sont 
 - `index.html`, `style.css`, `app.js` : le site.
 - `supabase/schema.sql` : tables et fonctions de la base (installation neuve).
 - `supabase/migrations/` : scripts à exécuter, dans l'ordre, sur une base déjà installée (ex. `001_add_link_url.sql`, `004_add_second_image.sql`).
-- `.github/workflows/keepalive.yml` : appel quotidien qui évite la mise en pause du projet Supabase gratuit.
 
 La sécurité repose sur la base : les tables sont verrouillées (RLS sans policy) et le site n'y accède que via des fonctions qui vérifient le mot de passe (stocké haché). L'URL et la clé `sb_publishable_…` présentes dans le code sont publiques par conception. **Ne jamais commiter** la clé `sb_secret_…`, le mot de passe de la base ni le mot de passe du site.
 
@@ -112,7 +111,9 @@ Relancer la requête de l'étape 2 avec le nouveau mot de passe. Les invités de
 
 ## Mise en pause de Supabase
 
-Le workflow `keepalive.yml` appelle chaque jour la fonction `ping`, qui écrit un horodatage (`last_ping`) dans la table `app_config`. Une simple lecture n'avait pas suffi à Supabase pour considérer le projet comme actif. Pour vérifier : `select * from birthlist.app_config where key = 'last_ping';`. Si le projet est malgré tout mis en pause, le réactiver depuis le dashboard Supabase (les données sont conservées). GitHub désactive les workflows planifiés après 60 jours sans activité dans le dépôt : en cas d'avertissement, réactiver le workflow dans l'onglet **Actions**.
+Le plan gratuit de Supabase met en pause un projet jugé inactif. Ce dépôt n'a plus de mécanisme de ping : le projet Supabase `family` reste actif grâce à l'activité d'une autre application hébergée dans le même projet (autre schéma). Un ping quotidien avait été essayé (`ping()` appelée par GitHub Actions) mais n'avait pas suffi à Supabase ; il a été supprimé.
+
+Si le projet est mis en pause, le réactiver depuis le dashboard Supabase : les données sont conservées pendant 90 jours après la pause.
 
 ## Limites connues
 
